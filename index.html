@@ -1,0 +1,1008 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"></head><body style="margin:0">
+<title>辣条偷吃大赛</title>
+<link rel="stylesheet" href="https://fonts.loli.net/css2?family=ZCOOL+KuaiLe&family=Long+Cang&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Long+Cang&display=swap">
+<style>
+  :root{
+    --paper:#F6EBCF; --paper2:#EFE1BC; --line:#C9D9EC; --margin:#E48B8B;
+    --ink:#1D3F9E; --ink2:#2A4FB8; --red:#D2312A; --board:#2E5A47; --board2:#244A3A;
+    --chalk:#F7F3E6; --hi:#F4E04D; --dark:#2B2320; --muted:#7A6B55;
+    --disp:"ZCOOL KuaiLe","Yuanti SC","YouYuan","PingFang SC","Microsoft YaHei",sans-serif;
+    --hand:"Long Cang","Kaiti SC","KaiTi","STKaiti",cursive;
+    --body:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html,body{height:100%}
+  body{margin:0;background:#D9C9A3 repeating-linear-gradient(45deg,transparent 0 14px,rgba(255,255,255,.08) 14px 16px);font-family:var(--body);color:var(--dark);overscroll-behavior:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+  #app{max-width:440px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--paper) repeating-linear-gradient(180deg,transparent 0 27px,var(--line) 27px 28px);position:relative;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 12px 40px rgba(60,40,10,.25);overflow:hidden}
+  #app::before{content:"";position:absolute;left:34px;top:0;bottom:0;border-left:2px solid var(--margin);opacity:.7;pointer-events:none}
+  #app::after{content:"";position:absolute;left:8px;top:40px;bottom:40px;width:12px;background:radial-gradient(circle,#8f8676 0 3px,transparent 3.5px) 0 0/12px 56px repeat-y;pointer-events:none;opacity:.7}
+  section{display:none;padding:22px 20px 28px 50px;min-height:100vh;min-height:100dvh;flex-direction:column}
+  section.on{display:flex}
+
+  h1,h2,.disp{font-family:var(--disp);font-weight:400;letter-spacing:.02em}
+  h1{font-size:46px;line-height:1.05;margin:0;color:var(--red);text-shadow:2px 2px 0 var(--hi);text-wrap:balance;transform:rotate(-2deg)}
+  h2{font-size:26px;margin:0;color:var(--ink)}
+  .hand{font-family:var(--hand);color:var(--ink);font-size:22px;line-height:1.35}
+  .small{font-size:13px;color:var(--muted)}
+  .pen{color:var(--ink)}
+  .redpen{color:var(--red);font-family:var(--hand)}
+
+  .btn{font-family:var(--disp);font-size:22px;border:2.5px solid var(--dark);border-radius:14px 18px 12px 20px/20px 12px 18px 14px;background:var(--hi);color:var(--dark);padding:14px 22px;box-shadow:3px 3px 0 var(--dark);cursor:pointer;transition:transform .08s,box-shadow .08s;text-align:center}
+  .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--dark)}
+  .btn.ghost{background:transparent;box-shadow:none;border-style:dashed;font-size:17px;padding:10px 16px}
+  .btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+  /* ---------- title ---------- */
+  .sticker{position:absolute;font-family:var(--disp);background:var(--red);color:#fff;padding:6px 12px;border-radius:50%;font-size:14px;transform:rotate(12deg);box-shadow:2px 2px 0 rgba(0,0,0,.25)}
+  .cover{margin-top:8px;border:2.5px solid var(--dark);border-radius:6px;background:#fff8ec;padding:22px 18px 18px;position:relative;box-shadow:4px 4px 0 var(--ink)}
+  .cover .grade{font-family:var(--hand);font-size:20px;color:var(--ink);display:inline-block;padding:0 6px}
+  .cover .grade-row{display:flex;gap:16px;align-items:baseline;white-space:nowrap;font-size:19px}
+  .name-in{font-family:var(--hand);font-size:19px;color:var(--red);background:transparent;border:0;border-bottom:1.5px solid var(--ink);width:4.6em;padding:0 4px;outline:none;-webkit-user-select:text;user-select:text}
+  .tryvoice{margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .chip{font-family:var(--disp);font-size:13px;border:1.5px solid var(--dark);background:#fff8ec;border-radius:999px;padding:3px 10px;cursor:pointer;color:var(--dark)}
+  .chip:active{background:var(--hi)}
+  .name-in::placeholder{color:#b9ad93;font-size:14px}
+  .name-in:focus{background:rgba(244,224,77,.35)}
+  /* 玩家角色 */
+  #pl-head,#pl-body,#pl-arm-eat,#pl-book,#pl-cheek{transition:transform .18s ease,opacity .15s}
+  #pl.bite #pl-head{transform:translate(2px,5px) rotate(12deg)}
+  #pl.stand #pl-body{transform:translate(0,-26px)}
+  #pl.book #pl-book{opacity:1}
+  #pl.chew #pl-cheek{opacity:1}
+  @media (prefers-reduced-motion:reduce){#pl-head,#pl-body{transition:none}}
+  .bag{width:190px;margin:4px auto 0;display:block}
+  .memo{margin-top:18px;font-family:var(--hand);font-size:19px;color:var(--ink);line-height:1.5}
+  .notice{margin-top:auto;padding-top:22px;font-size:12px;color:var(--muted);line-height:1.5}
+
+  /* ---------- about ---------- */
+  .about{margin-top:14px;border:2.5px solid var(--dark);background:#fff8ec;padding:18px 16px;box-shadow:4px 4px 0 var(--ink);font-size:15px;line-height:1.7;color:var(--dark)}
+  .about p{margin:0 0 12px;max-width:34em}
+  .about .lead{font-family:var(--hand);font-size:21px;line-height:1.4;color:var(--ink)}
+  .about b{color:var(--red);font-weight:400;font-family:var(--disp)}
+  .about-rules{display:flex;flex-direction:column;gap:6px;margin:4px 0 14px;padding:10px 12px;background:rgba(244,224,77,.3);border-left:3px solid var(--red);font-size:14px;line-height:1.5}
+  /* ---------- level select (课程表) ---------- */
+  .timetable{border:2.5px solid var(--dark);background:#fff8ec;border-radius:4px;margin-top:14px;overflow:hidden;box-shadow:4px 4px 0 var(--ink)}
+  .timetable .row{display:grid;grid-template-columns:56px 1fr 62px;align-items:center;border-top:1.5px solid var(--dark);min-height:60px}
+  .timetable .row:first-child{border-top:0;background:var(--hi);min-height:40px;font-family:var(--disp)}
+  .timetable .row > *{padding:8px 10px}
+  .timetable .row > *:first-child{border-right:1.5px solid var(--dark);font-family:var(--hand);font-size:18px;color:var(--ink);text-align:center}
+  .timetable .row > *:last-child{border-left:1.5px solid var(--dark);text-align:center;font-size:15px}
+  .lv{cursor:pointer}
+  .lv .n{font-family:var(--disp);font-size:19px;color:var(--dark)}
+  .lv .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .lv.locked{opacity:.45;cursor:not-allowed}
+  .lv.locked .n::after{content:" 🔒";font-size:13px}
+  .lv:not(.locked):active{background:#fdf1c5}
+  .stars{color:var(--red);letter-spacing:1px;font-size:14px}
+  .stars .off{color:#d7c9a8}
+
+  /* ---------- intro card ---------- */
+  .card{border:2.5px solid var(--dark);background:#fff8ec;border-radius:16px 18px 14px 20px/18px 14px 20px 16px;padding:20px 18px;box-shadow:4px 4px 0 var(--red);margin-top:16px;position:relative}
+  .card .tag{position:absolute;top:-14px;right:16px;background:var(--ink);color:#fff;font-family:var(--disp);padding:4px 12px;border-radius:12px;font-size:14px;transform:rotate(3deg)}
+  .rules{margin:14px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+  .rules li{display:flex;gap:10px;font-size:15px;line-height:1.45}
+  .rules li::before{content:"✎";color:var(--ink);flex:0 0 auto}
+  .intro-btns{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+
+  /* ---------- play ---------- */
+  #s-play{padding:10px 12px 14px 42px;justify-content:flex-start;gap:2px}
+  .hud{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 2px 6px}
+  .hud .lvname{font-family:var(--disp);font-size:18px;color:var(--ink);white-space:nowrap}
+  .hud .clock{font-family:var(--disp);font-size:24px;color:var(--dark);font-variant-numeric:tabular-nums;background:#fff8ec;border:2px solid var(--dark);border-radius:999px;padding:0 12px;line-height:32px;min-width:78px;text-align:center}
+  .hud .clock.hurry{color:var(--red);animation:blink .5s steps(2) infinite}
+  @keyframes blink{50%{opacity:.35}}
+  .strikes{display:flex;gap:4px;font-size:18px}
+  .strikes span{filter:grayscale(1);opacity:.35}
+  .strikes span.hit{filter:none;opacity:1}
+
+  .classroom{position:relative;border:2.5px solid var(--dark);border-radius:8px;background:#E9DDBF;overflow:hidden;aspect-ratio:34/31;box-shadow:3px 3px 0 var(--ink)}
+  .classroom svg{display:block;width:100%;height:100%}
+  .callout{position:absolute;left:0;right:0;top:44%;text-align:center;font-family:var(--disp);font-size:24px;color:#fff;text-shadow:0 0 0 #000,2px 2px 0 var(--dark),-1px -1px 0 var(--dark),1px -1px 0 var(--dark),-1px 1px 0 var(--dark);pointer-events:none;opacity:0;transition:opacity .15s;transform:rotate(-3deg)}
+  .callout.show{opacity:1}
+  .classroom.freeze svg{filter:grayscale(.85) contrast(1.15);transition:filter .1s}
+  .classroom svg{transition:filter .4s}
+  .verdict{position:absolute;left:10px;right:10px;bottom:10px;background:#fff8ec;border:2.5px solid var(--dark);border-radius:18px 22px 20px 16px/16px 20px 22px 18px;padding:10px 14px 12px;box-shadow:3px 3px 0 var(--red);opacity:0;transform:translateY(12px) scale(.94);transition:opacity .15s,transform .15s;pointer-events:none}
+  .verdict::before{content:"";position:absolute;top:-12px;left:50%;width:14px;height:14px;background:#fff8ec;border-left:2.5px solid var(--dark);border-top:2.5px solid var(--dark);transform:translateX(-50%) rotate(45deg)}
+  .verdict.show{opacity:1;transform:none}
+  .verdict .who{font-family:var(--disp);font-size:12px;color:var(--ink);letter-spacing:.1em}
+  .verdict .line{font-family:var(--hand);font-size:26px;line-height:1.2;color:var(--red);margin-top:2px}
+  .classroom.flash{animation:flash .35s}
+  @keyframes flash{0%{box-shadow:inset 0 0 0 200px rgba(210,49,42,.55)}100%{box-shadow:inset 0 0 0 200px rgba(210,49,42,0)}}
+  .classroom.shake{animation:shake .4s}
+  @keyframes shake{0%,100%{transform:none}25%{transform:translate(-4px,2px) rotate(-1deg)}75%{transform:translate(4px,-2px) rotate(1deg)}}
+
+  .desk{margin-top:8px;border:2.5px solid var(--dark);border-radius:6px;background:linear-gradient(180deg,#C99A5B,#B8874B);padding:10px 12px 8px;position:relative;box-shadow:3px 3px 0 var(--ink)}
+  .desk::before{content:"早 · 学习";position:absolute;right:10px;bottom:4px;font-family:var(--hand);font-size:13px;color:rgba(60,30,0,.45)}
+  .meters{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .meter label{display:flex;justify-content:space-between;font-size:12px;font-family:var(--disp);color:#fff8ec;text-shadow:1px 1px 0 rgba(0,0,0,.35);margin-bottom:4px}
+  .bar{height:16px;border:2px solid var(--dark);background:#fff8ec;border-radius:999px;overflow:hidden;position:relative}
+  .bar i{display:block;height:100%;width:0;background:var(--red);transition:width .08s linear}
+  .bar.sus i{background:linear-gradient(90deg,#8fc36b,#F4E04D 55%,#D2312A)}
+  .bar.sus::after{content:"";position:absolute;top:-2px;bottom:-2px;left:var(--thr,60%);border-left:2px dashed var(--dark)}
+  .sticks{display:flex;gap:3px;margin-top:8px;height:14px;align-items:flex-end}
+  .sticks b{flex:1;height:100%;background:var(--red);border:1.5px solid #7a1a15;border-radius:3px;transition:transform .2s,opacity .2s;max-width:26px}
+  .sticks b.gone{opacity:0;transform:scale(0)}
+  .statusline{margin-top:6px;min-height:20px;font-family:var(--hand);font-size:17px;color:#fff8ec;text-shadow:1px 1px 0 rgba(0,0,0,.4)}
+
+  .controls{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;margin-top:10px}
+  .ctl{border:2.5px solid var(--dark);border-radius:16px 20px 14px 18px/18px 14px 20px 16px;font-family:var(--disp);font-size:22px;padding:18px 8px;text-align:center;touch-action:none;box-shadow:3px 3px 0 var(--dark);position:relative;cursor:pointer;line-height:1.1}
+  .ctl small{display:block;font-family:var(--body);font-size:11px;margin-top:4px;opacity:.75}
+  .ctl.book{background:#fff8ec;color:var(--ink)}
+  .ctl.book.up{background:var(--ink);color:#fff;transform:translate(2px,2px);box-shadow:1px 1px 0 var(--dark)}
+  .ctl.eat{background:var(--red);color:#fff;font-size:30px}
+  .ctl.eat.down{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--dark);background:#b0241e}
+  .ctl.dis{opacity:.45;pointer-events:none}
+  .ctl.eat.chewing{background:#8d2b26;color:#f3cfcb}
+  .ctl.nope{animation:nope .25s}
+  @keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .strikes b{font-family:var(--disp);font-size:15px;color:var(--red);align-self:center}
+  #backdoor.jiggle{animation:jiggle .16s infinite;transform-origin:16px 250px}
+  @keyframes jiggle{50%{transform:translateX(1.5px) rotate(.6deg)}}
+  .ctl:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  .mute{white-space:nowrap;font-size:13px;background:#fff8ec;border:1.5px solid var(--dark);border-radius:999px;padding:3px 9px;font-family:var(--disp);cursor:pointer;color:var(--dark);line-height:1.4}
+
+  /* ---------- result ---------- */
+  .report{border:2.5px solid var(--dark);background:#fff8ec;padding:20px 18px;margin-top:14px;position:relative;box-shadow:4px 4px 0 var(--ink)}
+  .report .head{font-family:var(--disp);font-size:22px;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+  .report .grade{font-family:var(--hand);font-size:64px;color:var(--red);line-height:1;position:absolute;right:18px;top:52px;transform:rotate(-12deg)}
+  .report dl{margin:16px 0 0;display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:15px}
+  .report dt{color:var(--muted)}
+  .report dd{margin:0;font-family:var(--hand);font-size:19px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .report .comment{margin-top:16px;font-family:var(--hand);font-size:19px;color:var(--red);line-height:1.5;border-top:1.5px dashed var(--red);padding-top:10px}
+  .closest{margin-top:14px;display:flex;flex-direction:column;gap:4px;font-family:var(--hand);font-size:18px;color:var(--ink);line-height:1.4;background:rgba(29,63,158,.06);padding:8px 10px;border-left:3px solid var(--ink)}
+  .ttl{margin-top:16px;border:2px dashed var(--ink);border-radius:8px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:baseline;background:rgba(244,224,77,.25)}
+  .ttl-k{font-size:12px;color:var(--muted);letter-spacing:.1em}
+  .ttl-v{font-family:var(--disp);font-size:24px;color:var(--red);transform:rotate(-2deg);display:inline-block}
+  .ttl-d{grid-column:2;font-size:13px;color:var(--muted);line-height:1.4}
+  .bigstars{font-size:34px;color:var(--red);letter-spacing:4px;margin-top:6px}
+  .bigstars .off{color:#d7c9a8}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app">
+
+  <!-- ===== 封面 ===== -->
+  <section id="s-title">
+    <div style="position:relative">
+      <span class="sticker" style="right:-6px;top:-10px">五毛一包</span>
+      <div class="hand" style="font-size:16px;margin-bottom:6px">小赛元年 · 网页版</div>
+      <h1>课堂偷吃大赛<br><span style="font-size:30px;color:var(--ink);text-shadow:none">辣条特别篇</span></h1>
+    </div>
+    <div class="cover">
+      <div class="grade grade-row"><span>六年级（3）班</span><span>姓名：<input id="name-in" class="name-in" maxlength="5" placeholder="写名字" autocomplete="off"></span></div>
+      <div hidden class="grade" style="margin-top:6px;font-size:17px">王老师口头禅：<input id="slogan-in" class="name-in" style="width:9.5em" maxlength="14" placeholder="我后脑勺也长眼睛。" autocomplete="off"></div>
+      <div hidden class="tryvoice"><span class="small">试听嗓音：</span><button class="chip" data-role="王老师">王老师</button><button class="chip" data-role="刘老师">刘老师</button><button class="chip" data-role="陈老师">陈老师</button><button class="chip" data-role="张老师">张老师</button><button class="chip" data-role="班主任">班主任</button><button class="chip" data-role="听课领导">领导</button></div>
+      <svg class="bag" viewBox="0 0 170 150" aria-label="撕开的辣条包装袋">
+        <defs>
+          <filter id="wob"><feTurbulence baseFrequency="0.04" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter>
+          <linearGradient id="lt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C8442A"/><stop offset=".55" stop-color="#9E2A1C"/><stop offset="1" stop-color="#6E1810"/></linearGradient>
+          <linearGradient id="bagg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8463A"/><stop offset="1" stop-color="#B8261E"/></linearGradient>
+        </defs>
+        <g filter="url(#wob)">
+          <!-- 香气 -->
+          <path d="M60 30 q-6 -10 0 -20 q6 -10 0 -20" fill="none" stroke="#C9A24A" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          <path d="M85 26 q-6 -10 0 -20 q6 -10 0 -20" fill="none" stroke="#C9A24A" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          <path d="M110 30 q-6 -10 0 -20 q6 -10 0 -20" fill="none" stroke="#C9A24A" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          <!-- 从袋口伸出来的辣条：油亮、带芝麻 -->
+          <g stroke="#3a0e08" stroke-width="1.6" stroke-linejoin="round">
+            <path d="M56 70 L48 22 q4 -6 9 -1 L64 68 Z" fill="url(#lt)"/>
+            <path d="M72 66 L70 14 q5 -6 10 0 L82 66 Z" fill="url(#lt)"/>
+            <path d="M90 68 L100 20 q6 -4 9 2 L100 70 Z" fill="url(#lt)"/>
+            <path d="M106 72 L124 34 q7 -2 8 4 L114 74 Z" fill="url(#lt)"/>
+          </g>
+          <g fill="#FFE39A" opacity=".95"><circle cx="53" cy="35" r="1.4"/><circle cx="57" cy="50" r="1.3"/><circle cx="75" cy="28" r="1.4"/><circle cx="77" cy="46" r="1.2"/><circle cx="102" cy="34" r="1.4"/><circle cx="98" cy="52" r="1.3"/><circle cx="118" cy="46" r="1.3"/><circle cx="112" cy="60" r="1.2"/></g>
+          <g stroke="#FFB08A" stroke-width="1.6" stroke-linecap="round" opacity=".85"><path d="M51 30 L55 52"/><path d="M73 22 L74 48"/><path d="M104 28 L98 54"/><path d="M123 40 L112 60"/></g>
+          <g fill="#D7361F" stroke="#7a1a15" stroke-width=".6"><path d="M62 56 l3 -2 l-1 3 z"/><path d="M84 44 l3 -1 l-1 3 z"/><path d="M96 62 l3 -2 l-1 3 z"/></g>
+          <!-- 撕开的袋子 -->
+          <path d="M22 62 L30 58 L38 64 L48 56 L58 64 L68 57 L78 64 L90 56 L100 64 L112 57 L122 64 L132 58 L142 64 L136 138 Q84 146 30 138 Z" fill="url(#bagg)" stroke="#2B2320" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M30 138 Q84 146 136 138 L134 128 Q84 136 32 128 Z" fill="#F4E04D" stroke="#2B2320" stroke-width="2"/>
+          <path d="M28 84 Q84 92 138 84" fill="none" stroke="#fff" stroke-width="1.2" opacity=".35"/>
+          <text x="84" y="108" text-anchor="middle" font-family="ZCOOL KuaiLe,Yuanti SC,sans-serif" font-size="30" fill="#fff" stroke="#2B2320" stroke-width="1">大面筋</text>
+          <text x="84" y="123" text-anchor="middle" font-family="Long Cang,KaiTi,cursive" font-size="11" fill="#fff8ec">香辣味 · 小卖部限定</text>
+          <!-- 麻辣爆炸标 -->
+          <path d="M136 78 l4 -7 l3 7 l7 -3 l-3 7 l7 3 l-7 3 l3 7 l-7 -3 l-3 7 l-4 -7 l-7 3 l3 -7 l-7 -3 l7 -3 l-3 -7 z" fill="#F4E04D" stroke="#2B2320" stroke-width="1.2" transform="translate(4 -6)"/>
+          <text x="147" y="82" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="9" fill="#D2312A">麻辣</text>
+          <!-- 滴下来的红油 -->
+          <path d="M40 74 q-3 6 0 10 q3 -4 0 -10" fill="#C8442A" stroke="#7a1a15" stroke-width=".8"/>
+          <path d="M126 76 q-3 8 0 13 q3 -5 0 -13" fill="#C8442A" stroke="#7a1a15" stroke-width=".8"/>
+        </g>
+      </svg>
+      <div class="memo">撕开袋口的那一下，整个教室都闻到了。<br>红油顺着指缝往下淌，芝麻粘在拇指上，你一边舔手指一边盯着王老师的后脑勺——<br>她刚写到「疑是地上霜」。</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:22px">
+      <button class="btn" id="b-start">进教室</button>
+      <button class="btn ghost" id="b-howto">怎么玩？</button>
+      <button class="btn ghost" id="b-about" style="font-size:15px">← 这游戏是怎么来的</button>
+    </div>
+    <div class="notice">本游戏为模拟课堂，灵感来自 2026 年各地商场的「课堂偷吃大赛」。上课时请认真听讲，辣条留到下课再吃。</div>
+  </section>
+
+  <!-- ===== 首页：这游戏是怎么来的 ===== -->
+  <section id="s-about" class="on">
+    <div style="position:relative">
+      <span class="sticker" style="right:-6px;top:-12px;transform:rotate(-8deg)">小赛元年</span>
+      <div class="hand" style="font-size:16px;margin-bottom:6px">全国课堂偷吃大赛 · 网页赛区</div>
+      <h1 style="font-size:40px">辣条偷吃大赛</h1>
+    </div>
+    <div class="about">
+      <p class="lead">2026 年，商场没人逛了。<br>于是商场想了个办法：<br>把中庭改成教室，请你来上课。</p>
+      <p>假老师在走道里巡逻，你坐在课桌前扮学生，趁她转身往嘴里塞零食。就这么个事，宁波一家商场两千多人抢着报名，从幼儿园小朋友到退休大爷。全网看了五亿次。上海人偷吃生煎，武汉人偷吃热干面，长沙人偷吃辣条——大家忙了三十年，原来最想干的还是这个。</p>
+      <p>我们觉得跑一趟商场太远了。</p>
+      <p><b>所以老师来了。</b>语文王老师后脑勺长眼睛，数学刘老师写到一半猛回头，英语陈老师只会用英文骂人，体育张老师"有事改自习"结果自己坐在讲台看报纸。还有后门玻璃上那张脸。</p>
+      <p><b>你的任务只有一个：</b>下课铃响之前，把一包辣条吃完。<br>被抓罚站三秒。没有淘汰，只有丢脸。</p>
+      <p class="lead" style="margin-top:16px">让大人合法地做一次小孩。</p>
+      <p class="small" style="margin-top:10px">本游戏为趣味模拟。现实里上课要认真听讲，辣条留到下课再吃。</p>
+    </div>
+    <div class="intro-btns">
+      <button class="btn" id="b-about-start">我要报名</button>
+    </div>
+  </section>
+
+  <!-- ===== 课程表 / 选关 ===== -->
+  <section id="s-levels">
+    <h2>课 程 表</h2>
+    <div class="timetable" id="timetable"></div>
+    <div class="hand" id="titles-line" style="font-size:16px;margin-top:12px;line-height:1.5"></div>
+    <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+      <button class="btn ghost" id="b-back-title">← 封面</button>
+      <button class="btn ghost" id="b-reset" style="font-size:13px">清空成绩</button>
+    </div>
+  </section>
+
+  <!-- ===== 课前说明 ===== -->
+  <section id="s-intro">
+    <div class="hand" id="intro-eyebrow" style="font-size:17px">第 1 节</div>
+    <h2 id="intro-name">早自习</h2>
+    <div class="card">
+      <span class="tag" id="intro-tag">新机制</span>
+      <div class="hand" id="intro-memory" style="font-size:20px"></div>
+      <ul class="rules" id="intro-rules"></ul>
+    </div>
+    <div class="intro-btns">
+      <button class="btn" id="b-go">铃响了，进教室</button>
+      <button class="btn ghost" id="b-back-levels">← 课程表</button>
+    </div>
+  </section>
+
+  <!-- ===== 上课 ===== -->
+  <section id="s-play">
+    <div class="hud">
+      <div class="lvname" id="hud-name">早自习</div>
+      <div class="strikes" id="hud-strikes"><span>🧍</span><span>🧍</span><span>🧍</span><b id="hud-strike-n"></b></div>
+      <button class="mute" id="b-mute" aria-label="静音">♪ 开</button>
+      <div class="clock" id="hud-clock">1:00</div>
+    </div>
+
+    <div class="classroom" id="classroom">
+      <svg viewBox="0 0 340 310" id="scene" aria-label="教室">
+        <defs>
+          <filter id="hd"><feTurbulence baseFrequency="0.05" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.8"/></filter>
+          <pattern id="tile" width="40" height="20" patternUnits="userSpaceOnUse"><rect width="40" height="20" fill="#DCCFAE"/><path d="M0 20H40M20 0V20" stroke="#C8B98F" stroke-width="1"/></pattern>
+        </defs>
+        <!-- 墙：上白下绿墙裙，水泥地 -->
+        <rect x="0" y="0" width="340" height="150" fill="#F1EAD6"/>
+        <rect x="0" y="112" width="340" height="38" fill="#3F6B57"/>
+        <line x1="0" y1="112" x2="340" y2="112" stroke="#2B2320" stroke-width="1.5"/>
+        <rect x="0" y="150" width="340" height="160" fill="#CFC7B3"/>
+        <path d="M0 190 H340 M0 230 H340 M0 270 H340 M85 150 V310 M170 150 V310 M255 150 V310" stroke="#BDB49E" stroke-width="1"/>
+        <line x1="0" y1="150" x2="340" y2="150" stroke="#2B2320" stroke-width="2"/>
+        <!-- 日光灯 -->
+        <rect x="60" y="2" width="90" height="4" rx="2" fill="#fff" stroke="#2B2320" stroke-width="1"/>
+        <rect x="190" y="2" width="90" height="4" rx="2" fill="#fff" stroke="#2B2320" stroke-width="1"/>
+        <!-- 国旗 + 标语 -->
+        <g filter="url(#hd)">
+          <rect x="158" y="8" width="24" height="16" fill="#D2312A" stroke="#2B2320" stroke-width="1.2"/>
+          <path d="M163 12 l1.2 2.6 2.8.2-2.2 1.8.7 2.7-2.5-1.5-2.5 1.5.7-2.7-2.2-1.8 2.8-.2z" fill="#F4E04D"/>
+          <circle cx="169.5" cy="11" r=".8" fill="#F4E04D"/><circle cx="171.5" cy="13" r=".8" fill="#F4E04D"/><circle cx="171.5" cy="16" r=".8" fill="#F4E04D"/><circle cx="169.5" cy="18" r=".8" fill="#F4E04D"/>
+          <text x="98" y="22" text-anchor="middle" font-family="ZCOOL KuaiLe,Yuanti SC,sans-serif" font-size="14" fill="#D2312A" letter-spacing="3">好好学习</text>
+          <text x="242" y="22" text-anchor="middle" font-family="ZCOOL KuaiLe,Yuanti SC,sans-serif" font-size="14" fill="#D2312A" letter-spacing="3">天天向上</text>
+          <!-- 黑板两侧的竖条标语 -->
+          <rect x="6" y="34" width="18" height="76" fill="#D2312A" stroke="#2B2320" stroke-width="1.2"/>
+          <text x="15" y="48" text-anchor="middle" font-family="ZCOOL KuaiLe,Yuanti SC,sans-serif" font-size="11" fill="#F4E04D">团</text><text x="15" y="63" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="11" fill="#F4E04D">结</text><text x="15" y="78" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="11" fill="#F4E04D">紧</text><text x="15" y="93" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="11" fill="#F4E04D">张</text>
+          <rect x="316" y="34" width="18" height="76" fill="#D2312A" stroke="#2B2320" stroke-width="1.2"/>
+          <text x="325" y="48" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="11" fill="#F4E04D">严</text><text x="325" y="63" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="11" fill="#F4E04D">肃</text><text x="325" y="78" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="11" fill="#F4E04D">活</text><text x="325" y="93" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="11" fill="#F4E04D">泼</text>
+          <!-- 广播喇叭 + 挂钟 -->
+          <rect x="300" y="6" width="22" height="16" rx="2" fill="#8A5A2B" stroke="#2B2320" stroke-width="1.2"/>
+          <path d="M304 10 H318 M304 14 H318 M304 18 H318" stroke="#2B2320" stroke-width="1"/>
+          <circle cx="30" cy="16" r="9" fill="#fff8ec" stroke="#2B2320" stroke-width="1.5"/>
+          <path d="M30 16 L30 10 M30 16 L34 18" stroke="#2B2320" stroke-width="1.2" stroke-linecap="round"/>
+          <!-- 墙裙上的小海报：眼保健操 · 课程表 -->
+          <rect x="3" y="116" width="24" height="30" fill="#fff8ec" stroke="#2B2320" stroke-width="1"/>
+          <text x="15" y="125" text-anchor="middle" font-family="Long Cang,KaiTi,cursive" font-size="6.5" fill="#1D3F9E">眼保健操</text>
+          <path d="M7 130 H23 M7 135 H23 M7 140 H23" stroke="#C9D9EC" stroke-width="1"/>
+          <rect x="313" y="116" width="24" height="30" fill="#fff8ec" stroke="#2B2320" stroke-width="1"/>
+          <text x="325" y="125" text-anchor="middle" font-family="Long Cang,KaiTi,cursive" font-size="6.5" fill="#1D3F9E">课程表</text>
+          <path d="M317 130 H333 M317 135 H333 M317 140 H333 M322 128 V143 M328 128 V143" stroke="#C9D9EC" stroke-width="1"/>
+        </g>
+        <!-- 卫生角：扫帚、拖把、簸箕 -->
+        <g filter="url(#hd)">
+          <path d="M328 250 L322 300" stroke="#8A5A2B" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M316 300 L328 300 L326 308 L314 308 Z" fill="#E4C36A" stroke="#2B2320" stroke-width="1"/>
+          <path d="M336 246 L334 298" stroke="#8A5A2B" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M328 296 q6 -4 12 0 q2 8 -2 12 q-6 2 -10 -2 z" fill="#C9C9C9" stroke="#2B2320" stroke-width="1"/>
+          <path d="M300 296 h14 v12 h-14 z" fill="#4C79B5" stroke="#2B2320" stroke-width="1"/>
+        </g>
+        <!-- 后门（班主任） -->
+        <g id="backdoor" opacity="0.001">
+          <rect x="1" y="196" width="30" height="114" fill="#8A5A2B" stroke="#2B2320" stroke-width="2"/>
+          <rect x="6" y="206" width="20" height="36" fill="#C9D9EC" stroke="#2B2320" stroke-width="1.5"/>
+          <circle cx="26" cy="262" r="2.5" fill="#F4E04D"/>
+          <g id="bd-face"><circle cx="16" cy="226" r="11" fill="#F3D9B8" stroke="#2B2320" stroke-width="2"/><path d="M5 220 Q16 206 27 220" fill="#2B2320"/><circle cx="12" cy="227" r="2" fill="#2B2320"/><circle cx="20" cy="227" r="2" fill="#2B2320"/><path d="M11 233 L21 233" stroke="#2B2320" stroke-width="1.5"/></g>
+        </g>
+        <!-- 黑板 -->
+        <g filter="url(#hd)">
+          <rect x="30" y="30" width="280" height="98" rx="3" fill="#2E5A47" stroke="#2B2320" stroke-width="3"/>
+          <rect x="34" y="34" width="272" height="90" fill="none" stroke="#3d6b56" stroke-width="1"/>
+          <rect x="30" y="128" width="280" height="7" fill="#8A5A2B" stroke="#2B2320" stroke-width="2"/>
+          <text id="chalk-title" x="46" y="56" font-family="Long Cang,KaiTi,cursive" font-size="22" fill="#F7F3E6">静夜思</text>
+          <text id="chalk-l1" x="46" y="86" font-family="Long Cang,KaiTi,cursive" font-size="20" fill="#F7F3E6"></text>
+          <text id="chalk-l2" x="46" y="114" font-family="Long Cang,KaiTi,cursive" font-size="20" fill="#F7F3E6"></text>
+          <text x="236" y="50" font-family="Long Cang,KaiTi,cursive" font-size="11" fill="#F4E04D">值日：李雷</text>
+          <text x="236" y="64" font-family="Long Cang,KaiTi,cursive" font-size="11" fill="#F4E04D">韩梅梅</text>
+        </g>
+        <!-- 讲台 -->
+        <rect x="110" y="156" width="120" height="6" fill="#A8A08C" stroke="#2B2320" stroke-width="1.5"/>
+        <rect x="118" y="132" width="104" height="26" fill="#B8874B" stroke="#2B2320" stroke-width="2"/>
+        <rect x="124" y="126" width="16" height="7" fill="#fff8ec" stroke="#2B2320" stroke-width="1"/>
+        <path d="M127 129 h3 M131 129 h3 M135 129 h3" stroke="#D2312A" stroke-width="1.2"/>
+        <rect x="196" y="127" width="18" height="6" rx="1" fill="#2B2320"/>
+        <rect x="196" y="125" width="18" height="3" fill="#F7F3E6" stroke="#2B2320" stroke-width=".8"/>
+        <!-- 领导（公开课） -->
+        <g id="inspector" opacity="0.001" transform="translate(322 188)">
+          <rect x="-13" y="10" width="26" height="28" rx="4" fill="#3B3F5C" stroke="#2B2320" stroke-width="2"/>
+          <circle cx="0" cy="0" r="12" fill="#F3D9B8" stroke="#2B2320" stroke-width="2"/>
+          <path d="M-12 -4 Q0 -16 12 -4" fill="#2B2320"/>
+          <g id="insp-eyes"><circle cx="-4.5" cy="1" r="2" fill="#2B2320"/><circle cx="4.5" cy="1" r="2" fill="#2B2320"/></g>
+          <g id="insp-lids" opacity="0.001"><path d="M-8 1 L-1 1 M1 1 L8 1" stroke="#2B2320" stroke-width="1.5"/></g>
+          <text x="0" y="52" text-anchor="middle" font-size="9" font-family="sans-serif" fill="#2B2320">听课领导</text>
+        </g>
+        <!-- 同学（背影） -->
+        <g id="pupils" filter="url(#hd)"></g>
+        <!-- 咀嚼条：嘴里还有东西 -->
+        <g id="chew" opacity="0.001">
+          <rect x="139" y="221" width="62" height="9" rx="4" fill="#fff8ec" stroke="#2B2320" stroke-width="1.5"/>
+          <rect id="chew-fill" x="140" y="222" width="60" height="7" rx="3" fill="#D2312A"/>
+          <text x="170" y="216" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="10" fill="#D2312A">嚼嚼嚼</text>
+        </g>
+        <!-- 老师：发型、眼镜、衣服颜色、手里的东西按科目切换 -->
+        <g id="teacher" filter="url(#hd)" transform="translate(170 80)">
+          <g id="t-back">
+            <path class="t-body" d="M-22 44 L-16 4 Q0 -4 16 4 L22 44 Z" fill="#7B8CC8" stroke="#2B2320" stroke-width="2.5"/>
+            <circle cx="0" cy="-10" r="15" fill="#2B2320"/>
+            <g class="hair-bun"><circle cx="0" cy="-22" r="6" fill="#2B2320" stroke="#7B8CC8" stroke-width="1.5"/></g>
+            <g class="hair-pony"><path d="M0 -6 q6 10 2 24" stroke="#2B2320" stroke-width="6" stroke-linecap="round" fill="none"/><circle cx="0" cy="-8" r="3" fill="#D2312A"/></g>
+            <g class="hair-male"><path d="M-15 -10 Q-13 -20 0 -22 Q13 -20 15 -10" fill="#3a2a1a" opacity=".001"/></g>
+            <g class="hair-cap"><path d="M-15 -12 Q0 -30 15 -12 Z" fill="#D2312A" stroke="#2B2320" stroke-width="1.5"/></g>
+            <g class="prop-chalk"><path d="M16 8 L34 -14" stroke="#2B2320" stroke-width="3" stroke-linecap="round"/><path d="M34 -14 l3 -4" stroke="#F7F3E6" stroke-width="3" stroke-linecap="round"/></g>
+            <g class="prop-pointer"><path d="M16 8 L38 -18" stroke="#2B2320" stroke-width="3" stroke-linecap="round"/><path d="M28 -6 L40 -20" stroke="#8A5A2B" stroke-width="2.5" stroke-linecap="round"/></g>
+            <g class="prop-recorder"><path d="M16 8 L24 20" stroke="#2B2320" stroke-width="3" stroke-linecap="round"/></g>
+            <g class="prop-whistle"><path d="M16 8 L20 18" stroke="#2B2320" stroke-width="3" stroke-linecap="round"/></g>
+            <g class="prop-paper"><path d="M-16 8 L-22 16 M16 8 L22 16" stroke="#2B2320" stroke-width="3" stroke-linecap="round"/><rect x="-18" y="10" width="36" height="22" fill="#F7F3E6" stroke="#2B2320" stroke-width="1.5"/><path d="M-13 15 H13 M-13 20 H13 M-13 25 H5" stroke="#9a9a9a" stroke-width="1.2"/></g>
+          </g>
+          <g id="t-front" opacity="0.001">
+            <path class="t-body" d="M-22 44 L-16 4 Q0 -4 16 4 L22 44 Z" fill="#7B8CC8" stroke="#2B2320" stroke-width="2.5"/>
+            <path d="M-16 8 L-30 30" stroke="#2B2320" stroke-width="3" stroke-linecap="round"/>
+            <path d="M16 8 L30 30" stroke="#2B2320" stroke-width="3" stroke-linecap="round"/>
+            <g class="hair-bun hair-pony"><path d="M-22 -8 Q-22 -32 0 -30 Q22 -32 22 -8 Z" fill="#2B2320"/></g>
+            <g class="hair-male"><path d="M-18 -8 Q-18 -30 0 -30 Q18 -30 18 -8 Z" fill="#2B2320"/></g>
+            <g class="hair-cap"><path d="M-18 -12 Q-16 -30 0 -30 Q16 -30 18 -12 Z" fill="#2B2320"/></g>
+            <circle cx="0" cy="-8" r="14" fill="#F3D9B8" stroke="#2B2320" stroke-width="2"/>
+            <g class="hair-bun hair-pony"><path d="M-14 -14 Q0 -22 14 -14 L14 -10 Q0 -18 -14 -10 Z" fill="#2B2320"/></g>
+            <g class="hair-male"><path d="M-14 -13 L-14 -20 Q0 -26 14 -20 L14 -13 Q0 -19 -14 -13 Z" fill="#2B2320"/></g>
+            <g class="hair-cap"><path d="M-17 -14 Q0 -30 17 -14 Z" fill="#D2312A" stroke="#2B2320" stroke-width="1.5"/><path d="M-19 -13 L19 -13 L21 -9 L-21 -9 Z" fill="#D2312A" stroke="#2B2320" stroke-width="1.5"/></g>
+            <g class="prop-whistle"><path d="M-4 4 q4 10 8 0" stroke="#2B2320" stroke-width="1" fill="none"/><circle cx="0" cy="12" r="3" fill="#F4E04D" stroke="#2B2320" stroke-width="1"/></g>
+            <g class="prop-recorder"><rect x="-12" y="14" width="24" height="14" rx="2" fill="#5a5a5a" stroke="#2B2320" stroke-width="1.5"/><circle cx="-5" cy="21" r="3" fill="#ccc" stroke="#2B2320" stroke-width="1"/><circle cx="5" cy="21" r="3" fill="#ccc" stroke="#2B2320" stroke-width="1"/></g>
+            <g class="prop-paper"><rect x="-18" y="8" width="36" height="24" fill="#F7F3E6" stroke="#2B2320" stroke-width="1.5"/><path d="M-13 14 H13 M-13 19 H13 M-13 24 H5" stroke="#9a9a9a" stroke-width="1.2"/></g>
+            <g id="t-glasses"><circle cx="-6" cy="-7" r="5" fill="none" stroke="#2B2320" stroke-width="1.5"/><circle cx="6" cy="-7" r="5" fill="none" stroke="#2B2320" stroke-width="1.5"/><path d="M-1 -7 L1 -7" stroke="#2B2320" stroke-width="1.5"/></g>
+            <g id="t-eyes"><circle cx="-6" cy="-7" r="2" fill="#2B2320"/><circle cx="6" cy="-7" r="2" fill="#2B2320"/></g>
+            <path id="t-mouth" d="M-4 1 L4 1" stroke="#2B2320" stroke-width="1.5" stroke-linecap="round"/>
+          </g>
+          <g id="t-bubble" opacity="0.001">
+            <path d="M18 -50 Q18 -66 34 -66 Q50 -66 50 -50 Q50 -36 36 -36 L30 -28 L30 -36 Q18 -36 18 -50 Z" fill="#fff8ec" stroke="#2B2320" stroke-width="2"/>
+            <text id="t-bubble-txt" x="34" y="-45" text-anchor="middle" font-family="ZCOOL KuaiLe,sans-serif" font-size="18" fill="#D2312A">!</text>
+          </g>
+        </g>
+        <!-- 你：和大家一样面向黑板，从背后也看得出在偷吃 -->
+        <g id="pl" transform="translate(170 262) scale(1.42)" filter="url(#hd)">
+          <g id="pl-body">
+            <rect x="-9" y="17" width="18" height="5" fill="#8A5A2B" stroke="#2B2320" stroke-width="1.5"/>
+            <!-- 举起的课本：从背后看到书的封底立在头前 -->
+            <g id="pl-book" opacity="0.001"><rect x="-12" y="-37" width="24" height="17" rx="1" fill="#7B8CC8" stroke="#2B2320" stroke-width="1.5"/><text x="0" y="-25" text-anchor="middle" font-size="7" font-family="Long Cang,KaiTi,cursive" fill="#fff8ec">语文</text></g>
+            <path d="M-13 20 L-10 0 Q0 -5 10 0 L13 20 Z" fill="#F0F0F0" stroke="#2B2320" stroke-width="2"/>
+            <path d="M-6 -1 L-4 6 M6 -1 L4 6" stroke="#D2312A" stroke-width="2" stroke-linecap="round"/>
+            <!-- 头（会低下去、微微偏向右边） -->
+            <g id="pl-head" style="transform-box:fill-box;transform-origin:50% 92%">
+              <circle cx="0" cy="-12" r="10.5" fill="#F3D9B8" stroke="#2B2320" stroke-width="2"/>
+              <path d="M-11 -11 Q-11 -25 0 -24.5 Q11 -25 11 -11 Q7 -8 0 -7.5 Q-7 -8 -11 -11 Z" fill="#2B2320"/>
+              <circle cx="-10.5" cy="-10" r="2.2" fill="#F3D9B8" stroke="#2B2320" stroke-width="1"/>
+              <circle cx="10.5" cy="-10" r="2.2" fill="#F3D9B8" stroke="#2B2320" stroke-width="1"/>
+              <g id="pl-cheek" opacity="0.001"><circle id="pl-cheek-c" cx="11.5" cy="-7" r="3.5" fill="#F3C9A0" stroke="#2B2320" stroke-width="1"/></g>
+            </g>
+            <!-- 手臂：平时搭在桌上 / 偷吃时胳膊肘抬起来，辣条从头侧边露出来 -->
+            <g id="pl-arm-idle"><path d="M11 2 L15 13" stroke="#2B2320" stroke-width="2.5" stroke-linecap="round"/><path d="M-11 2 L-15 13" stroke="#2B2320" stroke-width="2.5" stroke-linecap="round"/></g>
+            <g id="pl-arm-eat" opacity="0.001"><path d="M-11 2 L-15 13" stroke="#2B2320" stroke-width="2.5" stroke-linecap="round"/><path d="M11 2 L21 -3 L13 -10" stroke="#2B2320" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="11" y="-14" width="10" height="3" rx="1" fill="#D2312A" stroke="#7a1a15" stroke-width="1" transform="rotate(-35 13 -12)"/></g>
+            <path id="pl-sweat" d="M13 -22 q3 4 0 6 q-3 -2 0 -6" fill="#7bb5e8" stroke="#2B2320" stroke-width=".8" opacity="0.001"/>
+          </g>
+          <!-- 课桌 + 名牌 -->
+          <rect x="-24" y="14" width="48" height="12" fill="#B8874B" stroke="#2B2320" stroke-width="2"/>
+          <rect x="-15" y="15.5" width="30" height="9" rx="1.5" fill="#fff8ec" stroke="#D2312A" stroke-width="1.2"/>
+          <text id="pl-name" x="0" y="22.3" text-anchor="middle" font-size="6.5" font-family="ZCOOL KuaiLe,Yuanti SC,sans-serif" fill="#D2312A">你</text>
+        </g>
+      </svg>
+      <div class="callout" id="callout"></div>
+      <div class="verdict" id="verdict"><div class="who" id="verdict-who">王老师</div><div class="line" id="verdict-line">我后脑勺也长眼睛。</div></div>
+    </div>
+
+    <div class="desk">
+      <div class="meters">
+        <div class="meter"><label><span>动静</span><span id="sus-txt">安静</span></label><div class="bar sus" id="sus-bar"><i></i></div></div>
+        <div class="meter"><label><span>辣条</span><span id="eat-txt">0/6</span></label><div class="bar" id="eat-bar"><i></i></div></div>
+      </div>
+      <div class="sticks" id="sticks"></div>
+      <div class="statusline" id="status">老师在写板书。</div>
+    </div>
+
+    <div class="controls">
+      <div class="ctl book" id="c-book" role="button" tabindex="0">举课本<small>点一下 · 举/放</small></div>
+      <div class="ctl eat" id="c-eat" role="button" tabindex="0"><span id="c-eat-lbl">咬一口</span><small id="c-eat-sub">短按小口 · 按住大口</small></div>
+    </div>
+  </section>
+
+  <!-- ===== 成绩单 ===== -->
+  <section id="s-result">
+    <div class="hand" style="font-size:17px" id="res-eyebrow">第 1 节 · 早自习</div>
+    <h2 id="res-title">下课！</h2>
+    <div class="report">
+      <div class="head"><span>成绩单</span><span class="small" id="res-who">六年级（3）班</span></div>
+      <div class="grade" id="res-grade">优</div>
+      <div class="bigstars" id="res-stars"></div>
+      <dl>
+        <dt>吃掉辣条</dt><dd id="res-eaten">6 / 6 根</dd>
+        <dt>用时</dt><dd id="res-time">32 秒</dd>
+        <dt>被抓</dt><dd id="res-caught">0 次</dd>
+        <dt>历史最佳</dt><dd id="res-best">—</dd>
+      </dl>
+      <div class="closest"><span class="ttl-k">最险的一刻</span><span id="res-close"></span></div>
+      <div class="comment" id="res-comment"></div>
+      <div class="ttl"><span class="ttl-k">本节称号</span><span class="ttl-v" id="res-ttl">普通干饭人</span><span class="ttl-d" id="res-ttl-desc"></span></div>
+    </div>
+    <div class="intro-btns">
+      <button class="btn" id="b-next">下一节课 →</button>
+      <button class="btn ghost" id="b-retry">再来一次</button>
+      <button class="btn ghost" id="b-res-levels">← 课程表</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ====================== 关卡 ====================== */
+const T_WANG={name:'王老师',subject:'语文',look:{hair:'bun',glasses:true,color:'#7B8CC8',prop:'chalk'},voice:'f1',quiz:'{name}，你，站起来背一下{board}。',quizTxt:'「{name}——你，站起来背一下《{board}》！」',pass:'嗯，背得不错，坐下。'};
+const T_LIU={name:'刘老师',subject:'数学',look:{hair:'male',glasses:true,color:'#5C6E8C',prop:'pointer'},voice:'m1',slogan:'我在讲台上都听见了。',quiz:'{name}，站起来，这道题等于几？',quizTxt:'「{name}——站起来，这道题等于几？」',pass:'对了，坐下。'};
+const T_CHEN={name:'陈老师',subject:'英语',look:{hair:'pony',glasses:false,color:'#E7A0A0',prop:'recorder'},voice:'f2',lang:'en-US',slogan:'Class, be quiet!',quiz:'Stand up, {name}. Read it, please.',quizTxt:'「Stand up, {name}. Read it, please.」',pass:'Good. Sit down.'};
+const T_ZHANG={name:'张老师',subject:'体育',look:{hair:'cap',glasses:false,color:'#3B7DD8',prop:'whistle',awayFront:true},voice:'m2',slogan:'全体都有！站起来！'};
+const LEVELS=[
+ {name:'早自习',sub:'语文 · 王老师 · 只会抄课文',tag:'教学关',teacher:T_WANG,sticks:10,time:60,away:[4.5,6.5],warn:1.5,look:[1.2,1.8],thr:.62,gain:.42,decay:.32,stand:3,
+  board:['静夜思','床前明月光，疑是地上霜。','举头望明月，低头思故乡。'],
+  memory:'早自习的教室，只有翻书声和王老师抄课文的粉笔声。她背对着大家的时候，全班都在干别的事。',
+  rules:['老师背对黑板时，按住「咬一口」低头咬：短按是小口，按住半秒变大口（顶 2 根半）。','松手后要嚼一会儿——小口 1 秒多，大口 2 秒多。嚼的时候不能再咬，被老师看见嘴在动，动静会涨得飞快。','老师头顶出现「！」就是要回头了：手要松，嘴里最好也已经嚼完。','被抓一次罚站 3 秒，没有淘汰。下课铃响前吃完就赢，被抓次数决定星星。']},
+ {name:'语文课',sub:'语文 · 王老师 · 写两个字回一次头',tag:'抽查背诵',teacher:T_WANG,sticks:12,time:65,away:[3,5],warn:1.1,look:[1.5,2.5],thr:.6,gain:.45,decay:.32,stand:3,
+  board:['春晓','春眠不觉晓，处处闻啼鸟。','夜来风雨声，花落知多少。'],
+  memory:'王老师有个习惯：写两个字回一次头。全班都摸清了，但还是有人被抓——因为辣条太香了。',
+  rules:['老师回头更频繁，「！」提示更短。','「举课本」能挡住动静，但吃得慢；老师盯着的时候举太久也会被怀疑。','新增「抽查背诵」：老师点到你名字，3 秒内必须松手、放下课本坐直，否则直接算被抓。','从这节课起会有突发事件：马蜂飞进来、广播叫老师开会……都是可以猛吃的安全窗口。']},
+ {name:'数学课',sub:'数学 · 刘老师 · 板书狂魔，猛回头',tag:'假回头杀',teacher:T_LIU,sticks:11,time:65,away:[2.8,4.5],warn:.8,look:[1.2,2],thr:.6,gain:.48,decay:.32,stand:3,fake:.35,
+  board:['第三单元 分数加减','1/2 + 1/3 = ?','通分：3/6 + 2/6 = 5/6'],
+  memory:'刘老师是板书狂魔，一节课能写满三块黑板。但他最出名的是写到一半突然扭头：「这道题谁会？」——全班的心脏一起停跳。',
+  rules:['刘老师回头前的提示只有不到一秒。','他还会「假回头」：头顶出现「……」时他其实没转身，出现「！」才是真的。','被点名要答题：站起来的时候嘴里不能有东西。']},
+ {name:'英语课',sub:'英语 · 陈老师 · 听力磁带',tag:'节奏关',teacher:T_CHEN,sticks:12,time:70,away:[3,3],warn:.9,look:[1.4,1.4],thr:.6,gain:.5,decay:.32,stand:3,rhythm:true,
+  board:['Lesson 12','A: How are you?  B: Fine, thank you.','Read after the tape.'],
+  memory:'英语课放听力磁带的时候，陈老师的眼睛全在录音机上。每道题念完那两秒的停顿，她会抬头扫一圈——磁带的节奏就是你的节奏。',
+  rules:['磁带播放时老师看着录音机（安全），每段结束她抬头扫视，节奏固定，数着拍子吃。','陈老师说英文。被抓的时候也是。']},
+ {name:'体育课改自习',sub:'体育 · 张老师 · 看报纸，随时抬头',tag:'突然抬头',teacher:T_ZHANG,sticks:11,time:70,away:[2.5,4.5],warn:.6,look:[.8,1.5],thr:.6,gain:.5,decay:.32,stand:3,patrol:.55,
+  board:['体育老师有事','这节课改上自习','—— 张老师'],
+  memory:'「体育老师有事，这节课改上自习。」张老师自己坐在讲台上看报纸，全班以为能松口气——直到他毫无征兆地抬起头，还会吹着口哨在走道里溜达。',
+  rules:['张老师面朝全班看报纸，看报纸时是安全的，抬头前的提示只有半秒多。','他视野广、走得快，巡视频繁；但每次盯的时间很短。']},
+ {name:'公开课',sub:'语文 · 王老师 · 后排坐着听课领导',tag:'双重视线',teacher:T_WANG,sticks:14,time:75,away:[3,4.5],warn:1,look:[1.4,2.2],thr:.6,gain:.52,decay:.32,stand:3,patrol:.35,inspector:true,
+  board:['欢迎各位领导莅临指导','今天我们学习《咏鹅》','鹅，鹅，鹅，曲项向天歌。'],
+  memory:'公开课那天全班穿了校服，后排坐着一排领导。王老师笑得比平时温柔，但目光比平时锋利。',
+  rules:['教室后排的领导会时不时睁眼看一圈，他看到也算被抓。','前有老师，后有领导，两边都要顾。']},
+ {name:'班主任突袭',sub:'语文自习 · 后门玻璃上的那张脸',tag:'突然袭击',teacher:T_WANG,sticks:14,time:75,away:[3,4.5],warn:.9,look:[1.4,2.2],thr:.6,gain:.52,decay:.32,stand:3.5,patrol:.4,backdoor:.3,
+  board:['班主任寄语','我就在门口。','——赵老师'],
+  memory:'每个班都有一位班主任，擅长毫无预兆地出现在后门的小窗户里。你永远不知道那张脸什么时候会出现。',
+  rules:['班主任会出现在后门。唯一的预告是门把手会先响一下、门会晃一下——不到一秒。','听到门响就松手，嘴里的东西也得赶紧咽下去。']},
+ {name:'期末总复习',sub:'语文 · 王老师 · 钓鱼执法，全部机制',tag:'期末考',teacher:T_WANG,sticks:18,time:90,away:[2.6,4.5],warn:.85,look:[1.5,2.6],thr:.58,gain:.55,decay:.32,stand:3.5,patrol:.4,backdoor:.25,inspector:true,fake:.4,
+  board:['期末总复习','以上全部背诵，明天默写。','—— 王老师'],
+  memory:'期末前的最后一节课。王老师什么都见过了，她会假装转身，然后猛地回头。这就是六年来所有课堂的总和。',
+  rules:['老师会「假回头」：出现「……」而不是「！」时，她其实没转身。','所有机制同时出现。吃完这一包，你就毕业了。']},
+];
+function TN(){return G.L&&G.L.teacher?G.L.teacher.name:'王老师';}
+function tfmt(t){return (t||'').replace('{name}',playerName()).replace('{board}',G.L.board[0]);}
+
+
+/* ====================== 存档 ====================== */
+const SAVE_KEY='latiao-sneak-v1';
+let save={unlocked:1,stars:{},best:{}};
+try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&s.unlocked)save=Object.assign(save,s);}catch(e){}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}}
+/* 姓名 */
+const nameIn=document.getElementById('name-in');
+try{nameIn.value=localStorage.getItem('latiao-name')||'';}catch(e){}
+nameIn.addEventListener('input',()=>{try{localStorage.setItem('latiao-name',nameIn.value.trim());}catch(e){}});
+function playerName(){const v=nameIn.value.trim();return v||'你';}
+const sloganIn=document.getElementById('slogan-in');
+try{sloganIn.value=localStorage.getItem('latiao-slogan')||'';}catch(e){}
+sloganIn.addEventListener('input',()=>{try{localStorage.setItem('latiao-slogan',sloganIn.value.trim());}catch(e){}});
+function slogan(){return sloganIn.value.trim()||'我后脑勺也长眼睛。';}
+/* ---- 让老师开口：浏览器自带的中文语音 ---- */
+const TTS={ok:'speechSynthesis' in window,slots:{},en:null,
+  pick(){if(!this.ok)return;const vs=speechSynthesis.getVoices();if(!vs.length)return;
+    const zh=vs.filter(v=>/^(zh|cmn|yue)/i.test(v.lang)||/中文|普通话|國語|粤語|Chinese|Mandarin|Cantonese/i.test(v.name));
+    const isMale=v=>/male|男|Yunxi|Yunyang|Yunjian|Kangkang|Wang|Sinji|Danny|Han/i.test(v.name)&&!/female|女/i.test(v.name);
+    const cn=zh.filter(v=>/zh[-_]CN|cmn|普通话|Mandarin/i.test(v.lang+' '+v.name));
+    const used=new Set();const take=pred=>{const v=cn.find(x=>pred(x)&&!used.has(x))||zh.find(x=>pred(x)&&!used.has(x));if(v)used.add(v);return v||null;};
+    const f1=take(v=>!isMale(v))||take(()=>true),m1=take(isMale)||take(()=>true),f2=take(v=>!isMale(v))||take(()=>true),m2=take(isMale)||take(()=>true);
+    const d=(v,base)=>v&&!Object.values(this.slots).some(s=>s.voice===v);
+    /* 嗓音不够时用音高/语速把人拉开 */
+    this.slots={};
+    this.slots.f1={voice:f1,pitch:1,rate:.95};
+    this.slots.m1={voice:m1,pitch:d(m1)?.9:.55,rate:.85};
+    this.slots.f2={voice:f2,pitch:d(f2)?1.05:1.35,rate:1.05};
+    this.slots.m2={voice:m2,pitch:d(m2)?.85:.65,rate:1.05};
+    this.slots['班主任']={voice:m1,pitch:.5,rate:.78};
+    this.slots['听课领导']={voice:m2,pitch:d(m2)?1.1:1.5,rate:.85};
+    const en=vs.filter(v=>/^en/i.test(v.lang));this.en=en.find(v=>/female|Samantha|Zira|Google US|Karen|Moira/i.test(v.name))||en[0]||null;},
+  say(text,role,o){if(!this.ok||muted)return;try{o=o||{};if(!Object.keys(this.slots).length)this.pick();
+    let slot=role,lang='zh-CN';
+    if(role==='teacher'){const t=G.L&&G.L.teacher;slot=t?t.voice:'f1';if(t&&t.lang)lang=t.lang;}
+    if(o.lang)lang=o.lang;
+    const r=this.slots[slot]||this.slots.f1||{};speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);
+    if(lang!=='zh-CN'&&this.en)u.voice=this.en;else if(r.voice)u.voice=r.voice;
+    u.lang=lang;u.rate=o.rate||r.rate||.95;u.pitch=o.pitch||r.pitch||1;u.volume=1;
+    if(o.delay)setTimeout(()=>speechSynthesis.speak(u),o.delay);else speechSynthesis.speak(u);}catch(e){}}
+};
+if(TTS.ok){TTS.pick();speechSynthesis.onvoiceschanged=()=>TTS.pick();}
+let verdictT=0;
+function verdict(who,line){const v=$('verdict');$('verdict-who').textContent=who;$('verdict-line').textContent=line;
+  const cls=$('classroom');cls.classList.add('freeze');v.classList.add('show');clearTimeout(verdictT);
+  tone(196,.5,'square',.12);tone(147,.7,'square',.12,.18);tone(98,1,'sawtooth',.14,.36);
+  TTS.say(line,who==='班主任'?'班主任':who==='听课领导'?'听课领导':'teacher',{delay:250});
+  verdictT=setTimeout(()=>{v.classList.remove('show');cls.classList.remove('freeze');},2400);}
+
+/* ====================== 音效 ====================== */
+let AC=null,muted=false;
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC;}
+function tone(f,d,type,g,when){const c=ac();if(!c||muted)return;const o=c.createOscillator(),v=c.createGain();o.type=type||'sine';o.frequency.value=f;v.gain.setValueAtTime(g||.15,c.currentTime+(when||0));v.gain.exponentialRampToValueAtTime(.0001,c.currentTime+(when||0)+d);o.connect(v).connect(c.destination);o.start(c.currentTime+(when||0));o.stop(c.currentTime+(when||0)+d+.02);}
+function noise(d,g){const c=ac();if(!c||muted)return;const b=c.createBuffer(1,c.sampleRate*d,c.sampleRate),x=b.getChannelData(0);for(let i=0;i<x.length;i++)x[i]=(Math.random()*2-1)*(1-i/x.length);const s=c.createBufferSource();s.buffer=b;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=1800;const v=c.createGain();v.gain.value=g||.25;s.connect(f).connect(v).connect(c.destination);s.start();}
+/* ---- 笑声：几个“同学”错开笑 ---- */
+function laughVoice(base,delay,n){const c=ac();if(!c||muted)return;
+  for(let i=0;i<n;i++){const t=c.currentTime+delay+i*.16;
+    const o=c.createOscillator(),f=c.createBiquadFilter(),v=c.createGain();
+    o.type='sawtooth';o.frequency.setValueAtTime(base*(1+i*.02),t);o.frequency.exponentialRampToValueAtTime(base*.78,t+.13);
+    f.type='bandpass';f.frequency.value=base*3.2;f.Q.value=2.5;
+    v.gain.setValueAtTime(.0001,t);v.gain.exponentialRampToValueAtTime(.11,t+.02);v.gain.exponentialRampToValueAtTime(.0001,t+.14);
+    o.connect(f).connect(v).connect(c.destination);o.start(t);o.stop(t+.16);}
+}
+function laughter(){[[210,0,6],[290,.12,5],[170,.25,6],[340,.4,4],[240,.55,5]].forEach(a=>laughVoice(a[0],a[1],a[2]));}
+/* ---- 羞愧：一声下滑的“哇——” + 木鱼一敲 ---- */
+function shame(){const c=ac();if(!c||muted)return;const t=c.currentTime;
+  const o=c.createOscillator(),f=c.createBiquadFilter(),v=c.createGain();
+  o.type='sawtooth';o.frequency.setValueAtTime(420,t);o.frequency.exponentialRampToValueAtTime(110,t+.9);
+  f.type='lowpass';f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(300,t+.9);
+  v.gain.setValueAtTime(.18,t);v.gain.exponentialRampToValueAtTime(.0001,t+1);
+  o.connect(f).connect(v).connect(c.destination);o.start(t);o.stop(t+1.05);
+  tone(90,.5,'sine',.3);
+}
+/* ---- 掌声 ---- */
+function applause(){const c=ac();if(!c||muted)return;
+  for(let i=0;i<28;i++){const t=c.currentTime+.3+i*.055+Math.random()*.03;
+    const b=c.createBuffer(1,c.sampleRate*.03,c.sampleRate),x=b.getChannelData(0);for(let k=0;k<x.length;k++)x[k]=(Math.random()*2-1)*(1-k/x.length);
+    const s=c.createBufferSource();s.buffer=b;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=2200+Math.random()*1500;const v=c.createGain();v.gain.value=.12+Math.random()*.1;
+    s.connect(f).connect(v).connect(c.destination);s.start(t);}
+  [[392,0],[523,.15],[659,.3],[784,.45],[1047,.6]].forEach(a=>tone(a[0],.35,'square',.05,a[1]+.2));
+}
+/* ---- 心跳 ---- */
+function heartbeat(strength){const c=ac();if(!c||muted)return;const t=c.currentTime;const g=.12+strength*.28;
+  [[0,g],[.13,g*.7]].forEach(a=>{const o=c.createOscillator(),v=c.createGain();o.type='sine';o.frequency.setValueAtTime(70,t+a[0]);o.frequency.exponentialRampToValueAtTime(40,t+a[0]+.12);
+    v.gain.setValueAtTime(a[1],t+a[0]);v.gain.exponentialRampToValueAtTime(.0001,t+a[0]+.14);o.connect(v).connect(c.destination);o.start(t+a[0]);o.stop(t+a[0]+.16);});
+}
+/* ---- 紧张弦：动静越大越尖 ---- */
+let tens=null;
+function tension(level){const c=ac();if(!c)return;
+  if(!tens){const o=c.createOscillator(),l=c.createOscillator(),lg=c.createGain(),v=c.createGain();o.type='triangle';o.frequency.value=880;l.type='sine';l.frequency.value=7;lg.gain.value=12;l.connect(lg).connect(o.frequency);v.gain.value=0;o.connect(v).connect(c.destination);o.start();l.start();tens={o,v};}
+  const g=muted?0:Math.pow(Math.max(0,level),2.2)*.07;tens.v.gain.setTargetAtTime(g,c.currentTime,.06);tens.o.frequency.setTargetAtTime(700+level*500,c.currentTime,.1);
+}
+/* ---- 封面小曲：五声音阶，千禧电子味 ---- */
+const BGM={on:false,timer:0,step:0,next:0,
+  mel:[523,0,659,784,0,880,784,659, 523,0,659,784,880,0,1047,880, 784,0,659,523,0,440,523,659, 784,659,523,0,440,0,392,0],
+  bass:[131,0,131,0,175,0,175,0,196,0,196,0,175,0,147,0,131,0,131,0,175,0,175,0,196,0,196,0,147,0,131,0],
+  start(){if(this.on)return;const c=ac();if(!c)return;this.on=true;this.step=0;this.next=c.currentTime+.05;this.timer=setInterval(()=>this.tick(),90);},
+  stop(){this.on=false;clearInterval(this.timer);},
+  tick(){const c=AC;if(!c||muted)return;while(this.next<c.currentTime+.25){const i=this.step%32;const t=this.next-c.currentTime;
+    if(this.mel[i])tone(this.mel[i],.16,'square',.035,t);if(this.bass[i])tone(this.bass[i],.22,'triangle',.09,t);
+    if(i%4===0)noise(.02,.05);this.next+=.17;this.step++;}}
+};
+const SFX={
+  crunch(){noise(.07,.3);tone(180+Math.random()*80,.05,'triangle',.05);},
+  chalk(){noise(.04,.08);},
+  warn(){tone(880,.12,'square',.06);},
+  tick(){tone(1400,.03,'square',.05);},
+  caught(){shame();setTimeout(laughter,1500);},
+  bell(){[0,.25,.5,.75].forEach((t,i)=>{tone(1320,.5,'triangle',.18,t);tone(1760,.4,'triangle',.1,t+.05);});},
+  win(){[523,659,784,1047].forEach((f,i)=>tone(f,.3,'triangle',.15,i*.12));applause();},
+  fail(){shame();setTimeout(laughter,300);setTimeout(()=>{[392,349,330,262].forEach((f,i)=>tone(f,.4,'triangle',.12,i*.28));},1200);},
+  step(){tone(120,.08,'triangle',.18);noise(.03,.12);},
+  door(){noise(.12,.35);tone(300,.15,'square',.08);tone(1200,.1,'square',.05,.05);},
+};
+
+/* ====================== DOM ====================== */
+const $=id=>document.getElementById(id);
+const screens=['s-title','s-about','s-levels','s-intro','s-play','s-result'];
+function show(id){screens.forEach(s=>$(s).classList.toggle('on',s===id));window.scrollTo(0,0);}
+
+/* ---- 课程表 ---- */
+function starStr(n,big){let s='';for(let i=0;i<3;i++)s+=i<n?'★':'<span class="off">★</span>';return s;}
+function renderLevels(){
+  const t=$('timetable');t.innerHTML='<div class="row"><div>节次</div><div>课程</div><div>成绩</div></div>';
+  LEVELS.forEach((L,i)=>{
+    const locked=i+1>save.unlocked;
+    const row=document.createElement('div');row.className='row lv'+(locked?' locked':'');
+    row.innerHTML=`<div>第${i+1}节</div><div><div class="n">${L.name}</div><div class="s">${L.sub}</div></div><div class="stars">${save.stars[i+1]?starStr(save.stars[i+1]):'<span class="small">—</span>'}</div>`;
+    if(!locked)row.addEventListener('click',()=>{ac();openIntro(i);});
+    t.appendChild(row);
+  });
+  const tl=Object.keys(save.titles||{});
+  $('titles-line').textContent=tl.length?`已获称号（${tl.length}）：${tl.join('、')}`:'称号栏还是空的——先上一节课试试。';
+}
+let cur=0;
+function openIntro(i){
+  cur=i;const L=LEVELS[i];
+  $('intro-eyebrow').textContent=`第 ${i+1} 节 · ${L.sub}`;
+  $('intro-name').textContent=L.name;$('intro-tag').textContent=L.tag;
+  $('intro-memory').textContent=L.memory;
+  $('intro-rules').innerHTML=L.rules.map(r=>`<li>${r}</li>`).join('');
+  show('s-intro');
+}
+
+/* ====================== 游戏状态 ====================== */
+const G={};
+let raf=0,last=0;
+const T=$('teacher'),TB=$('t-back'),TF=$('t-front'),TBub=$('t-bubble'),TBubTxt=$('t-bubble-txt'),TEyes=$('t-eyes'),TMouth=$('t-mouth');
+const susBar=$('sus-bar'),eatBar=$('eat-bar');
+const cEat=$('c-eat'),cBook=$('c-book');
+
+function buildPupils(){
+  const g=$('pupils');let s='';
+  const rows=[{y:168,sc:.8},{y:210,sc:1},{y:258,sc:1.25}];const cols=[48,106,234,292];
+  rows.forEach((r,ri)=>{for(let i=0;i<cols.length;i++){const x=cols[i];const hue=['#2B2320','#3a2a1a','#1f1f2b'][(i+ri)%3];
+    s+=`<g transform="translate(${x} ${r.y}) scale(${r.sc})"><rect x="-22" y="26" width="44" height="12" fill="#B8874B" stroke="#2B2320" stroke-width="2"/><path d="M-14 26 L-11 6 Q0 0 11 6 L14 26Z" fill="${['#F0F0F0','#F4E04D','#7B8CC8','#E7A0A0'][(i*7+ri)%4]}" stroke="#2B2320" stroke-width="2"/><circle cx="0" cy="-3" r="9" fill="${hue}"/></g>`;}});
+  g.innerHTML=s;
+}
+buildPupils();
+
+function rnd(a,b){return a+Math.random()*(b-a);}
+function setLook(look){
+  T.querySelectorAll('[class^="hair-"],[class*=" hair-"],[class^="prop-"]').forEach(el=>{
+    const c=el.getAttribute('class');const on=c.includes('hair-'+look.hair)||c.includes('prop-'+look.prop)||(look.awayFront&&c.includes('prop-paper'));
+    el.setAttribute('opacity',on?1:0.001);});
+  $('t-glasses').setAttribute('opacity',look.glasses?1:0.001);
+  T.querySelectorAll('.t-body').forEach(el=>el.setAttribute('fill',look.color));
+}
+function setTeacher(front,x,y,sc,walking){
+  const look=G.L&&G.L.teacher?G.L.teacher.look:{};
+  if(look.awayFront&&!walking){TB.setAttribute('opacity',0.001);TF.setAttribute('opacity',1);
+    T.querySelectorAll('#t-front .prop-paper').forEach(el=>el.setAttribute('opacity',front?0.001:1));
+    T.querySelectorAll('#t-front .prop-'+look.prop).forEach(el=>el.setAttribute('opacity',front?1:0.001));
+    TEyes.setAttribute('opacity',front?1:0.001);$('t-glasses').setAttribute('opacity',front&&look.glasses?1:0.001);}
+  else{TB.setAttribute('opacity',front?0.001:1);TF.setAttribute('opacity',front?1:0.001);TEyes.setAttribute('opacity',1);
+    if(look.awayFront){T.querySelectorAll('.prop-paper').forEach(el=>el.setAttribute('opacity',0.001));T.querySelectorAll('#t-front .prop-'+look.prop).forEach(el=>el.setAttribute('opacity',1));}}
+  T.setAttribute('transform',`translate(${x} ${y}) scale(${sc||1})`);}
+
+function bubble(txt,on){TBub.setAttribute('opacity',on?1:0.001);if(txt)TBubTxt.textContent=txt;}
+
+function startLevel(i){
+  cur=i;const L=LEVELS[i];
+  Object.assign(G,{L,t:L.time,sus:0,eaten:0,strikes:0,eating:false,book:false,bookHeld:0,standing:0,done:false,elapsed:0,
+    st:'away',stT:rnd(L.away[0]*.6,L.away[1]*.6),tx:170,ty:80,tsc:1,patrolPhase:0,
+    bd:{active:false,t:0,next:rnd(6,12)},insp:{look:false,t:rnd(3,6)},msgT:0,
+    ev:{next:rnd(7,11),active:null,t:0,count:0},safe:0,quiz:0,drop:0,forcePatrol:false,bookTime:0,quizPassed:0,safeEaten:0,hb:0,tk:0,
+    bite:{on:false,t:0},chew:0,chewTotal:0,bigBites:0,closest:{sus:0,t:0,chew:false,who:''},catches:[]});
+  G.bd.pre=0;
+  setLook(L.teacher.look);
+  $('hud-name').textContent=`第${i+1}节 · ${L.name}`;
+  $('pl-name').textContent=playerName();
+  $('chalk-title').textContent=L.board[0];$('chalk-l1').textContent='';$('chalk-l2').textContent='';
+  G.chalkProg=L.teacher.look.awayFront?999:0;
+  $('backdoor').setAttribute('opacity',L.backdoor?1:0.001);$('bd-face').setAttribute('opacity',0.001);
+  $('inspector').setAttribute('opacity',L.inspector?1:0.001);setInspEyes(false);
+  susBar.style.setProperty('--thr',(L.thr*100)+'%');
+  const sk=$('sticks');sk.innerHTML='';for(let k=0;k<L.sticks;k++){sk.appendChild(document.createElement('b'));}
+  updStrikes();setTeacher(false,170,80,1);bubble('!',false);cBook.classList.remove('up');cEat.classList.remove('down','dis');cBook.classList.remove('dis');
+  status(G.L.teacher.look.awayFront?TN()+'在看报纸。':TN()+'在写板书。');callout('');
+  show('s-play');BGM.stop();
+  last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
+}
+function setInspEyes(open){$('insp-eyes').setAttribute('opacity',open?1:0.001);$('insp-lids').setAttribute('opacity',open?0.001:1);}
+function status(s){$('status').textContent=s;}
+let calloutT=0;
+function callout(s,ms){const c=$('callout');c.textContent=s;c.classList.toggle('show',!!s);clearTimeout(calloutT);if(s&&ms)calloutT=setTimeout(()=>c.classList.remove('show'),ms);}
+function updStrikes(){const h=$('hud-strikes');[...h.querySelectorAll('span')].forEach((el,k)=>el.classList.toggle('hit',k<G.strikes));$('hud-strike-n').textContent=G.strikes>3?`×${G.strikes}`:'';}
+
+/* ---- 老师状态机 ---- */
+function nextState(){
+  const L=G.L,s=G.st;
+  if(s==='away'){
+    if(L.fake&&Math.random()<L.fake){G.st='fake';G.stT=L.warn*.9;bubble('……',true);SFX.warn();}
+    else{G.st='warn';G.stT=L.warn;bubble('!',true);SFX.warn();}
+  }else if(s==='fake'){G.st='away';G.stT=rnd(L.away[0]*.5,L.away[1]*.7);bubble('',false);}
+  else if(s==='warn'){bubble('',false);
+    if(G.forcePatrol||(L.patrol&&Math.random()<L.patrol)){const pool=G.forcePatrol?[0]:cur<4?[0,1]:cur<7?[0,1,2]:[1,2,3];G.forcePatrol=false;startPatrol(pool[Math.floor(Math.random()*pool.length)]);}
+    else{G.st='look';G.stT=rnd(L.look[0],L.look[1]);setTeacher(true,170,80,1);status('老师在看着全班。');}
+  }else if(s==='look'||s==='patrol'){G.st='away';G.stT=L.rhythm?L.away[0]:rnd(L.away[0],L.away[1]);setTeacher(false,170,80,1);status(G.L.teacher.look.awayFront?TN()+'在看报纸。':TN()+'在写板书。');}
+}
+/* ====================== 随机事件 ====================== */
+const NAMES=['李小明','王芳','张伟','刘洋','陈晨','赵子涵'];
+const EVENTS=[
+ {id:'wasp',min:2,good:true,dur:5,title:'马蜂！',msg:'一只马蜂飞进来了，王老师拿课本去打——全班都在偷吃。',end:'马蜂被打死了。老师回来了。'},
+ {id:'radio',min:2,good:true,dur:4,title:'广播：教师开会',msg:'广播：「全体教职工到办公室开会。」王老师出去了。',end:'王老师回来了，脸色不太好。'},
+ {id:'duster',min:3,good:true,dur:4,title:'值日生擦黑板',msg:'值日生李雷站起来擦黑板，正好挡住老师的视线。',end:'黑板擦完了。'},
+ {id:'quiz',min:2,good:false},
+ {id:'drop',min:4,good:false},
+ {id:'snitch',min:4,good:false},
+];
+function tryEvent(dt){
+  const e=G.ev,L=G.L,li=cur+1;
+  if(e.active){e.t-=dt;
+    if(e.active.good){G.safe=e.t;if(e.t<=0){e.active=null;G.safe=0;status(EVENTS.find(x=>x.id===e.lastId).end.replace(/王老师/g,TN()));callout('');e.next=rnd(8,13);}}
+    else if(e.active.id==='quiz'){G.quiz=e.t;callout(`背诵！${Math.ceil(e.t)}`);
+      if(e.t<=0){e.active=null;G.quiz=0;callout('');
+        if(G.bite.on||G.chew>0)caught('嘴里有东西怎么背课文！');else if(G.book)caught('举着课本背什么书！');else{G.quizPassed++;status('「'+L.teacher.pass+'」');SFX.chalk();TTS.say(L.teacher.pass,'teacher');}
+        e.next=rnd(9,14);}}
+    else if(e.active.id==='drop'){G.drop=e.t;if(e.t<=0){e.active=null;G.drop=0;cEat.classList.remove('dis');G.sus=Math.min(1,G.sus+.35);status('捡起来了……弯腰太久，老师有点怀疑。');e.next=rnd(9,14);}}
+    else if(e.active.id==='snitch'){if(e.t<=0){e.active=null;if(G.st!=='patrol')status('虚惊一场，同桌白举报了。');e.next=rnd(10,15);}}
+    return;
+  }
+  if(G.standing>0||G.st!=='away'||G.bd.active||G.bd.pre>0||e.count>=3)return;
+  e.next-=dt;if(e.next>0)return;e.count++;
+  const pool=EVENTS.filter(x=>x.min<=li&&!(x.id==='quiz'&&!L.teacher.quiz));if(!pool.length){e.next=10;return;}
+  const ev=pool[Math.floor(Math.random()*pool.length)];e.active=ev;e.lastId=ev.id;
+  if(ev.good){e.t=ev.dur;G.safe=ev.dur;callout(ev.title);status(ev.msg.replace(/王老师/g,TN()));tone(1200,.15,'square',.05);tone(1600,.2,'square',.05,.12);}
+  else if(ev.id==='quiz'){e.t=3;G.quiz=3;status(`${TN()}：${tfmt(L.teacher.quizTxt)}`);TTS.say(tfmt(L.teacher.quiz),'teacher');setTeacher(true,170,80,1);G.st='look';G.stT=3.4;SFX.warn();}
+  else if(ev.id==='drop'){e.t=2;G.drop=2;G.bite.on=false;cEat.classList.remove('down');cEat.classList.add('dis');G.book=false;cBook.classList.remove('up');callout('辣条掉了！',900);status('辣条掉地上了！弯腰去捡……（这两秒老师看不见你）');noise(.1,.3);}
+  else if(ev.id==='snitch'){e.t=4;callout('同桌举手了！',900);status(`同桌${NAMES[Math.floor(Math.random()*NAMES.length)]}举手：「老师，${playerName()}在吃东西！」`);G.forcePatrol=true;G.st='warn';G.stT=.9;bubble('!',true);SFX.warn();}
+}
+/* ---- 巡视路线：沿走道真的走 ---- */
+const ROUTES=[
+  [{x:170,y:80},{x:170,y:182,pause:1.2},{x:170,y:80}],
+  [{x:170,y:80},{x:78,y:150},{x:78,y:290,pause:1},{x:78,y:150},{x:170,y:80}],
+  [{x:170,y:80},{x:262,y:150},{x:262,y:290,pause:1},{x:262,y:150},{x:170,y:80}],
+  [{x:170,y:80},{x:78,y:150},{x:78,y:300},{x:170,y:302,pause:1.2},{x:262,y:300},{x:262,y:150},{x:170,y:80}],
+];
+function startPatrol(rid){
+  const pts=ROUTES[rid],segs=[];let total=0;
+  for(let i=0;i<pts.length;i++){const p=pts[i];
+    if(i>0){const q=pts[i-1];const d=Math.hypot(p.x-q.x,p.y-q.y)/70;segs.push({move:true,from:q,to:p,dur:d});total+=d;}
+    if(p.pause){segs.push({move:false,at:p,dur:p.pause});total+=p.pause;}}
+  G.st='patrol';G.stT=total;G.route={segs,total};G.stepT=0;
+  status(rid===0?'皮鞋声……老师顺着中间走道走过来了。':rid===3?'老师下讲台了，要绕教室一整圈。':'老师下讲台了，在走道里巡视。');
+}
+function stepPatrol(dt){
+  const r=G.route;let e=r.total-G.stT;let seg=null;
+  for(const s of r.segs){if(e<=s.dur){seg=s;break;}e-=s.dur;}
+  if(!seg)seg=r.segs[r.segs.length-1];
+  let x,y,front=true,moving=false;
+  if(seg.move){const k=Math.min(1,e/seg.dur);x=seg.from.x+(seg.to.x-seg.from.x)*k;y=seg.from.y+(seg.to.y-seg.from.y)*k;front=seg.to.y>=seg.from.y;moving=true;}
+  else{x=seg.at.x;y=seg.at.y;}
+  const sc=1+Math.max(0,y-80)/150*.55;
+  const bob=moving?Math.sin(e*14)*1.5:0;
+  G.tx=x;G.ty=y;G.tfront=front;setTeacher(front,x,y+bob,sc,true);
+  if(moving){G.stepT-=dt;if(G.stepT<=0){SFX.step();G.stepT=.42;}}
+}
+function teacherWatching(){
+  if(G.safe>0||G.drop>0)return 0;
+  if(G.st==='look')return 1;
+  if(G.st==='patrol'){if(!G.tfront)return 0;const d=Math.hypot(G.tx-170,G.ty-262);return d<85?2:1;}
+  return 0;
+}
+function loop(now){
+  let dt=Math.min(.05,(now-last)/1000);last=now;
+  if(!G.done){step(dt);render();}
+  if(!G.done)raf=requestAnimationFrame(loop);
+}
+function step(dt){
+  const L=G.L;G.t-=dt;G.elapsed+=dt;
+  tryEvent(dt);
+  /* 老师（安全窗口期间老师的节奏暂停） */
+  if(G.safe>0){G.sus=Math.max(0,G.sus-dt*.3);}else G.stT-=dt;
+  if(G.st==='patrol')stepPatrol(dt);
+  if(G.stT<=0)nextState();
+  if(G.st==='away'){G.chalkProg+=dt*1.6;const n=Math.floor(G.chalkProg);
+    const l1=L.board[1],l2=L.board[2];$('chalk-l1').textContent=l1.slice(0,Math.min(l1.length,n));$('chalk-l2').textContent=n>l1.length?l2.slice(0,Math.min(l2.length,n-l1.length)):'';
+    if(n<=l1.length+l2.length&&Math.random()<dt*6)SFX.chalk();}
+  /* 班主任 */
+  if(L.backdoor){const b=G.bd;
+    if(b.active){b.t-=dt;if(b.t<=0){b.active=false;$('bd-face').setAttribute('opacity',0.001);b.next=rnd(5,11);status('班主任走了。');}}
+    else if(b.pre>0){b.pre-=dt;if(b.pre<=0){b.active=true;b.t=1.6;$('bd-face').setAttribute('opacity',1);$('backdoor').classList.remove('jiggle');SFX.door();callout('后门！',700);status('班主任！在后门！');}}
+    else{b.next-=dt;if(b.next<=0&&Math.random()<L.backdoor+.5){b.pre=.8;$('backdoor').classList.add('jiggle');tone(2400,.05,'square',.06);tone(1900,.06,'square',.06,.09);status('后门的门把手响了一下……');}else if(b.next<=0)b.next=rnd(3,6);}
+  }
+  /* 领导 */
+  if(L.inspector){const s=G.insp;s.t-=dt;if(s.t<=0){s.look=!s.look;s.t=s.look?rnd(1.2,2):rnd(3,6);setInspEyes(s.look);if(s.look)status('后排领导抬头了。');}}
+  /* 罚站 */
+  if(G.standing>0){G.standing-=dt;G.sus=Math.max(0,G.sus-dt*.8);tension(0);if(G.standing<=0){cEat.classList.remove('dis');cBook.classList.remove('dis');status('「坐下。」老师还盯着你。');TTS.say(G.L.teacher.lang?'Sit down.':'坐下。','teacher');}return finishCheck();}
+  /* 吃 & 动静 */
+  const watch=teacherWatching(),bdW=G.bd.active&&G.safe<=0,inW=L.inspector&&G.insp.look&&G.safe<=0;
+  const watching=watch>0||bdW||inW;
+  if(G.book)G.bookTime+=dt;
+  const coverK=G.book?.45:1;
+  /* 姿势层：低头咬的时候 */
+  if(G.bite.on){
+    G.bite.t+=dt;G.sus=Math.min(1,G.sus+dt*L.gain*coverK);
+    if(G.bite.t>=1.0)releaseBite();
+  }
+  /* 咀嚼层：嘴里有东西，松手也消不掉 */
+  if(G.chew>0){
+    G.chew-=dt;
+    if(watching)G.sus=Math.min(1,G.sus+dt*.9*(L.chewK||1)*(G.book?.55:1));
+    if(Math.random()<dt*3)noise(.04,.06);
+    if(G.chew<=0){G.chew=0;}
+  }
+  if(!G.bite.on&&G.chew<=0)G.sus=Math.max(0,G.sus-dt*L.decay);
+  if(G.book){G.bookHeld+=dt;if(watching&&G.bookHeld>1.2)G.sus=Math.min(1,G.sus+dt*.18);}else G.bookHeld=0;
+  /* 紧张感：心跳随动静加快，弦声随动静变尖；老师要回头时滴答 */
+  const busy=G.bite.on||G.chew>0;
+  const danger=Math.min(1,G.sus/L.thr);
+  tension(busy||G.sus>.15?danger:0);
+  G.hb=(G.hb||0)-dt;if((busy||G.sus>.25)&&G.hb<=0){heartbeat(danger);G.hb=1.05-danger*.7;}
+  if(G.st==='warn'||G.st==='fake'){G.tk=(G.tk||0)-dt;if(G.tk<=0){SFX.tick();G.tk=.2;}}
+  let thr=L.thr;if(watch===2)thr*=.5;
+  const who=bdW?'班主任':inW?'领导':watch===2?'身边的老师':'老师';
+  if(watching&&G.sus>thr)caught(bdW?'班主任抓到你了！':inW?'领导看到了！':watch===2?'老师就站在你旁边！':`被${TN()}抓到了！`);
+  else if(watching){const r=G.sus/thr;if(r>G.closest.sus){G.closest={sus:r,t:G.elapsed,chew:G.chew>0||G.bite.on,who};}}
+  finishCheck();
+}
+function releaseBite(){
+  if(!G.bite.on)return;const L=G.L;
+  const big=G.bite.t>=.45;G.bite.on=false;cEat.classList.remove('down');
+  const amt=big?2.5:1;const before=G.eaten;G.eaten=Math.min(L.sticks,G.eaten+amt);
+  if(G.safe>0)G.safeEaten+=G.eaten-before;if(big)G.bigBites++;
+  G.chewTotal=G.chew=big?2.6:1.3;
+  SFX.crunch();if(big)setTimeout(SFX.crunch,90);
+}
+function finishCheck(){
+  const L=G.L;
+  if(G.eaten>=L.sticks-1e-6&&!G.done)return endLevel(true);
+  if(G.t<=0&&!G.done)return endLevel(false,'bell');
+}
+function caught(msg){
+  const L=G.L;G.strikes++;G.bite.on=false;G.chew=0;cEat.classList.remove('down');G.sus=0;G.book=false;cBook.classList.remove('up');
+  G.catches.push({t:G.elapsed,msg});
+  G.ev.active=null;G.quiz=0;G.drop=0;G.safe=0;G.forcePatrol=false;G.ev.next=rnd(8,12);tension(0);
+  updStrikes();SFX.caught();callout(msg,900);
+  const who=msg.includes('班主任')?'班主任':msg.includes('领导')?'听课领导':TN();
+  const line=who==='班主任'?'我就在门口。':who==='听课领导'?'这位同学，你在干什么？':(L.teacher.slogan||slogan());
+  setTimeout(()=>verdict(who,line),350);
+  const cls=$('classroom');cls.classList.remove('flash','shake');void cls.offsetWidth;cls.classList.add('flash','shake');
+  TMouth.setAttribute('d','M-5 0 Q0 6 5 0');setTimeout(()=>TMouth.setAttribute('d','M-4 1 L4 1'),900);
+  G.standing=L.stand;cEat.classList.add('dis');cBook.classList.add('dis');status(`「站起来！」罚站 ${L.stand} 秒（原价 30 秒）`);
+  G.st='look';G.stT=L.stand+.9;setTeacher(true,170,80,1);bubble('',false);
+  if(G.bd.active||G.bd.pre>0){G.bd.active=false;G.bd.pre=0;$('bd-face').setAttribute('opacity',0.001);$('backdoor').classList.remove('jiggle');G.bd.next=rnd(6,12);}
+  if(L.inspector){G.insp.look=false;G.insp.t=rnd(4,7);setInspEyes(false);}
+}
+function render(){
+  const L=G.L;
+  susBar.firstElementChild.style.width=(G.sus*100)+'%';
+  $('sus-txt').textContent=G.sus<.2?'安静':G.sus<L.thr*.8?'窸窸窣窣':G.sus<L.thr?'危险！':'太吵了';
+  eatBar.firstElementChild.style.width=(G.eaten/L.sticks*100)+'%';
+  $('eat-txt').textContent=`${Math.floor(G.eaten)}/${L.sticks}`;
+  [...$('sticks').children].forEach((b,k)=>b.classList.toggle('gone',k<Math.floor(G.eaten)));
+  /* 嘴里还有东西：头顶咀嚼条 + 按钮文案 */
+  const cf=$('chew-fill');cf.setAttribute('width',G.chew>0?60*(G.chew/G.chewTotal):0);$('chew').setAttribute('opacity',G.chew>0?1:0.001);
+  const lab=$('c-eat-lbl'),sub=$('c-eat-sub');
+  if(G.standing>0){lab.textContent='罚站中';sub.textContent='……';}
+  else if(G.bite.on){lab.textContent=G.bite.t>=.45?'大口！':'小口';sub.textContent=G.bite.t>=.45?'松手 = 2.5 根':'再按住一点变大口';}
+  else if(G.chew>0){lab.textContent='嚼…';sub.textContent='嘴里有东西，不能再咬';}
+  else{lab.textContent='咬一口';sub.textContent='短按小口 · 按住大口';}
+  cEat.classList.toggle('chewing',G.chew>0&&!G.bite.on);
+  /* 你的角色 */
+  const pl=$('pl');pl.classList.toggle('bite',G.bite.on);pl.classList.toggle('chew',G.chew>0&&!G.bite.on);pl.classList.toggle('book',G.book);pl.classList.toggle('stand',G.standing>0);
+  $('pl-arm-eat').setAttribute('opacity',G.bite.on?1:0.001);$('pl-arm-idle').setAttribute('opacity',G.bite.on?0.001:1);
+  const puff=G.chew>0&&Math.floor(G.elapsed*7)%2===0;
+  $('pl-cheek-c').setAttribute('r',puff?4.6:3.4);
+  $('pl-head').style.transform=(G.chew>0&&!G.bite.on)?`translate(0,${puff?1.2:0}px)`:'';
+  $('pl-sweat').setAttribute('opacity',(G.sus/L.thr)>.7||G.standing>0?1:0.001);
+  const t=Math.max(0,Math.ceil(G.t));const c=$('hud-clock');c.textContent=`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;c.classList.toggle('hurry',t<=10);
+}
+
+/* ---- 结束 ---- */
+function endLevel(win,why){
+  G.done=true;G.bite.on=false;cEat.classList.remove('down');cancelAnimationFrame(raf);
+  const L=G.L,i=cur,used=Math.round(G.elapsed);
+  let stars=0;if(win)stars=G.strikes===0?3:G.strikes<=2?2:1;
+  tension(0);
+  const pct=G.eaten/L.sticks;
+  if(win){SFX.win();setTimeout(SFX.bell,500);}else{SFX.bell();setTimeout(laughter,600);}
+  /* 没有淘汰：赢了解锁下一节；吃掉六成以上也放你过 */
+  const pass=win||pct>=.6;
+  if(win){save.stars[i+1]=Math.max(save.stars[i+1]||0,stars);if(!save.best[i+1]||used<save.best[i+1])save.best[i+1]=used;}
+  if(pass)save.unlocked=Math.max(save.unlocked,Math.min(LEVELS.length,i+2));
+  persist();
+  $('res-eyebrow').textContent=`第 ${i+1} 节 · ${L.name}`;$('res-who').textContent=`六年级（3）班 · ${playerName()}`;
+  $('res-title').textContent=win?(i===LEVELS.length-1?'毕业了！':'吃完了！下课！'):(pct>=.6?'下课了……差一点':'下课了……没吃完');
+  $('res-grade').textContent=win?['','及格','良','优'][stars]:(pct>=.6?'及格':'差');
+  /* 最险的一刻 */
+  const c=G.closest;let close;
+  if(G.strikes>0){const k=G.catches[0];close=`第 ${Math.round(k.t)} 秒，${k.msg.replace(/[！!]/g,'')}——全班都回头看你。`;}
+  else if(c.sus>=.7){close=`第 ${Math.round(c.t)} 秒，${c.who}回头时动静条到了 ${Math.round(c.sus*100)}%${c.chew?'，嘴里还在嚼':''}。差一点。`;}
+  else if(c.sus>0){close=`第 ${Math.round(c.t)} 秒最接近被发现，也只有 ${Math.round(c.sus*100)}%。稳。`;}
+  else close='全程没有惊险时刻——你是不是没吃？';
+  $('res-close').textContent=close;
+  $('res-stars').innerHTML=starStr(stars);
+  $('res-eaten').textContent=`${Math.floor(G.eaten)} / ${L.sticks} 根`;
+  $('res-time').textContent=`${used} 秒`;
+  $('res-caught').textContent=`${G.strikes} 次`;
+  $('res-best').textContent=save.best[i+1]?`${save.best[i+1]} 秒`:'—';
+  const comments={
+    3:['一根都没被发现，你是全班的传奇。','老师：这孩子上课真专注。','建议保送。'],
+    2:['被抓一次，但整包都进肚子了，值。','站了一次，吃完了，童年就是这样。'],
+    1:['站了两次还坚持吃完，毅力可嘉。','这一包吃得惊心动魄。'],
+    bell:['下课铃响了，剩下的辣条被同桌吃了。','没吃完。老师说：下课再吃不行吗？——不行。','剩下的没收了，老师替你吃。'],
+  };
+  const pool=win?comments[stars]:comments.bell;
+  $('res-comment').textContent='老师评语：'+pool[Math.floor(Math.random()*pool.length)];
+  /* 称号 */
+  let title,tdesc;
+  if(G.strikes>=3){title='罚站专业户';tdesc=`一节课站了 ${G.strikes} 回，教室后墙都认识你了。`;}
+  else if(!win){title='拖堂受害者';tdesc='铃响了，嘴里还剩半根。';}
+  else if(G.strikes===0&&used<L.time*.45){title='嘴速天花板';tdesc=`${used} 秒吃完 ${L.sticks} 根，还一次没被抓。`;}
+  else if(G.bigBites>=3&&G.strikes===0){title='大口王';tdesc=`敢在老师眼皮底下咬 ${G.bigBites} 次大口，一次没被抓。`;}
+  else if(G.quizPassed>=2){title='默读达人';tdesc='被点名背诵两次，两次都坐得笔直。';}
+  else if(G.safeEaten>=L.sticks*.5){title='混乱中的干饭王';tdesc='一半的辣条都是趁乱吃掉的。';}
+  else if(G.bookTime>G.elapsed*.5){title='假装看书冠军';tdesc='这节课有一大半时间课本举在脸前。';}
+  else if(G.strikes===0){title='班级潜伏王';tdesc='全程零被抓，老师至今不知道你吃过东西。';}
+  else if(G.strikes===2){title='惊魂未定选手';tdesc='站了两次还敢吃完，胆子比嘴大。';}
+  else{title='普通干饭人';tdesc='站过一次，吃完了，童年就是这样。';}
+  $('res-ttl').textContent=title;$('res-ttl-desc').textContent=tdesc;
+  save.titles=save.titles||{};if(!save.titles[title]){save.titles[title]=1;persist();}
+  $('b-next').style.display=(pass&&i<LEVELS.length-1)?'':'none';
+  setTimeout(()=>{show('s-result');callout('');BGM.start();},win?900:600);
+}
+
+/* ====================== 输入 ====================== */
+function eatDown(e){if(e)e.preventDefault();if(G.done||G.standing>0||G.drop>0)return;ac();
+  if(G.chew>0){cEat.classList.remove('nope');void cEat.offsetWidth;cEat.classList.add('nope');return;}
+  if(G.bite.on)return;G.bite.on=true;G.bite.t=0;cEat.classList.add('down');}
+function eatUp(e){if(e)e.preventDefault();if(G.bite&&G.bite.on)releaseBite();cEat.classList.remove('down');}
+cEat.addEventListener('pointerdown',eatDown);
+['pointerup','pointercancel','pointerleave'].forEach(ev=>cEat.addEventListener(ev,eatUp));
+cEat.addEventListener('contextmenu',e=>e.preventDefault());
+function toggleBook(e){if(e)e.preventDefault();if(G.done||G.standing>0)return;ac();G.book=!G.book;G.bookHeld=0;cBook.classList.toggle('up',G.book);}
+cBook.addEventListener('pointerdown',toggleBook);
+cBook.addEventListener('contextmenu',e=>e.preventDefault());
+window.addEventListener('keydown',e=>{if(!$('s-play').classList.contains('on'))return;if(e.code==='Space'&&!e.repeat)eatDown(e);if((e.code==='ShiftLeft'||e.code==='ShiftRight'||e.code==='KeyB')&&!e.repeat)toggleBook(e);});
+window.addEventListener('keyup',e=>{if(e.code==='Space')eatUp(e);});
+window.addEventListener('blur',()=>eatUp());
+
+/* ====================== 按钮 ====================== */
+$('b-start').addEventListener('click',()=>{ac();BGM.start();renderLevels();show('s-levels');});
+$('b-howto').addEventListener('click',()=>{ac();BGM.start();openIntro(0);});
+$('b-back-title').addEventListener('click',()=>show('s-title'));
+$('b-about').addEventListener('click',()=>show('s-about'));
+$('b-about-start').addEventListener('click',()=>{ac();BGM.start();show('s-title');});
+$('b-reset').addEventListener('click',()=>{if(confirm('清空所有成绩和解锁进度？')){save={unlocked:1,stars:{},best:{}};persist();renderLevels();}});
+$('b-go').addEventListener('click',()=>{ac();SFX.bell();startLevel(cur);});
+$('b-back-levels').addEventListener('click',()=>{renderLevels();show('s-levels');});
+$('b-next').addEventListener('click',()=>openIntro(cur+1));
+$('b-retry').addEventListener('click',()=>startLevel(cur));
+$('b-res-levels').addEventListener('click',()=>{renderLevels();show('s-levels');});
+document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ac();const r=b.dataset.role;TTS.pick();
+  const map={'王老师':[slogan(),'f1'],'刘老师':[T_LIU.slogan,'m1'],'陈老师':[T_CHEN.slogan,'f2','en-US'],'张老师':[T_ZHANG.slogan,'m2'],'班主任':['我就在门口。','班主任'],'听课领导':['这位同学，你在干什么？','听课领导']};
+  const m=map[r];TTS.say(m[0],m[1],m[2]?{lang:m[2]}:{});}));
+$('b-mute').addEventListener('click',()=>{muted=!muted;$('b-mute').textContent=muted?'♪ 关':'♪ 开';if(muted){tension(0);try{speechSynthesis.cancel();}catch(e){}}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){tension(0);eatUp();}});
+})();
+</script>
+
+</body></html>
